@@ -4,5 +4,6 @@ from . import views
 
 urlpatterns = [
     path('register/', views.register),
+    path('login/' , views.login),
     # 경로로는 레지스터를 사용하고 뷰 파일의 레지스터 함수 연결
 ]
