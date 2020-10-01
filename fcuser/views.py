@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect # 리다이랙트를 위해 불러옴
 from django.http import HttpResponse # 비밀번호 확인을 하기 위한 불러옴
 from django.contrib.auth.hashers import make_password, check_password # 비밀번호 암호화 해서 저장하기 위한 make_password, 비밀번호를 비교하기 위한 check_password
 from .models import Fcuser
@@ -40,14 +40,26 @@ def login(request):
         if not (username and password):
             res_data['error'] = '모든 값을 입력해야합니다.'
         else:
-            fcuser = Fcuser.objects.get(username = username) # 입력 받은 id와 필드명이 같은 것을 모델에서 가지고 온다.
+            fcuser = Fcuser.objects.get(username = username) # 입력 받은 username과 username이 같은 것을 모델에서 가지고 온다.
             if check_password(password, fcuser.password):
-                    # 입력 받은 비밀번호와 모델의 비밀번호가 같은 경우 로그인 처리
-                    pass
+                # 입력 받은 비밀번호와 모델의 비밀번호가 같은 경우 로그인 처리
+                request.session['user'] = fcuser.id # request 변수 안에 session이라는 변수가 있는데 파이썬에서 딕셔너리 변수를 사용할 때 처럼 똑같이 사용하면 됨 
+                # user 키에 방금 로그인한 fcuser id 가 저장 된 것임
+                return redirect('/') # 슬래시를 써주면 루트로 감(홈페이지)
+
             else:
                 res_data['error'] = '비밀번호가 다릅니다.'
             
         return render(request, 'login.html', res_data)
+
+def home(request):
+    user_id = request.session.get('user') # 세션으로부터 사용자 정보를 가지고 옴
+
+    if user_id: # 만약에 user가 있으면
+        fcuser = Fcuser.objects.get(pk=user_id) # 모델에서 id를 가지고 옴
+        return HttpResponse(fcuser.name) # 유저네임 출력
+         
+    return HttpResponse('Home!') # 로그인을 안했다면 홈이 나옴
 
             
 
