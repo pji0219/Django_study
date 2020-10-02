@@ -21,6 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('fcuser/', include('fcuser.urls')),
     # fc유저와 관련된 것들은 fcuser에 있는 urls을 사용하겠다. 명시
+    path('board/', include('board.urls')),
     path('', home),
     # 홈페이지 경로 지정
 ]
